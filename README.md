@@ -1,3 +1,53 @@
+# Next.js (src/app 模式) 项目结构与服务端逻辑
+```
+lance-blog/
+├─ src/
+│  ├─ app/                     # App Router 根目录
+│  │  ├─ api/                  # API 路由（服务端代码）
+│  │  │  ├─ hello/route.ts     # /api/hello GET/POST
+│  │  │  └─ users/route.ts     # /api/users
+│  │  │      └─ 用户请求 -> 调用 lib/services 逻辑 -> 返回响应
+│  │  ├─ layout.tsx            # 全局布局（Server Component 或 Client Component）
+│  │  ├─ page.tsx              # 首页 Server Component，SSR 页面
+│  │  │      └─ 调用 lib/services 获取数据 -> 渲染页面
+│  │  └─ dashboard/            # 嵌套路由
+│  │      ├─ layout.tsx
+│  │      └─ page.tsx          # Dashboard 页面
+│  │             └─ 调用服务端逻辑（lib/services/db）渲染
+│  ├─ components/              # 可复用前端组件（纯前端）
+│  ├─ lib/                     # 服务端逻辑工具库
+│  │  ├─ db.ts                 # 数据库连接
+│  │  └─ services/             # 业务逻辑函数
+│  │      ├─ userService.ts    # 用户相关服务函数
+│  │      └─ authService.ts    # 认证相关服务函数
+│  └─ styles/                  # 样式文件
+├─ public/                      # 静态资源
+├─ middleware.ts                # 请求中间件（认证/日志/重定向）
+├─ next.config.js
+├─ package.json
+└─ tsconfig.json
+```
+# 🔹 逻辑关系说明
+
+- `app/api/*/route.ts`
+  - 接收 HTTP 请求（GET/POST/PUT/DELETE）
+  - 调用 `lib/services/*` 处理业务逻辑
+  - 返回 JSON 响应
+
+- `Server Components` (app/page.tsx, app/dashboard/page.tsx)
+  - 运行在服务端
+  - 可以直接访问 `lib/db.ts` 或 `lib/services/*` 获取数据
+  - 渲染后输出 HTML 给客户端
+
+- `Client Components` (components/*)
+  - 前端渲染组件
+  - 可通过 fetch 调用 API 路由获取数据
+
+- `middleware.ts`
+  - 拦截请求
+  - 可做认证、缓存、日志、重定向等
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
